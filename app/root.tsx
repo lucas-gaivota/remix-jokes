@@ -9,11 +9,14 @@ import {
   Outlet,
   Scripts,
   useCatch,
+  useLoaderData,
 } from "@remix-run/react";
 
 import globalStylesUrl from "./styles/global.css";
 import globalMediumStylesUrl from "./styles/global-medium.css";
 import globalLargeStylesUrl from "./styles/global-large.css";
+import flagsmith from "flagsmith/isomorphic";
+import { FlagsmithProvider } from 'flagsmith/react';
 
 export const links: LinksFunction = () => {
   return [
@@ -69,10 +72,25 @@ function Document({
   );
 }
 
+export const loader = async () => {
+  await flagsmith.init({
+      environmentID: 'abexTuDkpVjHSV9JgYUJfg',
+  });
+
+  return { flagsmithState: flagsmith.getState() }
+}
+
 export default function App() {
+  const { flagsmithState } = useLoaderData();
+  
   return (
     <Document>
-      <Outlet />
+      <FlagsmithProvider
+        serverState={flagsmithState}
+        flagsmith={flagsmith}
+      >
+        <Outlet />
+      </FlagsmithProvider>
     </Document>
   );
 }

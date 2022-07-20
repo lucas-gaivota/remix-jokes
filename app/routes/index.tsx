@@ -3,6 +3,7 @@ import type {
   MetaFunction,
 } from "@remix-run/node";
 import { Link } from "@remix-run/react";
+import { useFlags } from 'flagsmith/react';
 
 import stylesUrl from "~/styles/index.css";
 
@@ -17,6 +18,9 @@ export const meta: MetaFunction = () => ({
 });
 
 export default function IndexRoute() {
+  const flags = useFlags(['link_text']);
+  const linkText = flags.link_text;
+
   return (
     <div className="container">
       <div className="content">
@@ -26,7 +30,7 @@ export default function IndexRoute() {
         <nav>
           <ul>
             <li>
-              <Link to="jokes">Read Jokes</Link>
+              {linkText.enabled && <Link to="jokes">{linkText.value}</Link>}
             </li>
           </ul>
         </nav>
